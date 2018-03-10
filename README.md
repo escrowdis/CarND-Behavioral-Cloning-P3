@@ -12,7 +12,7 @@ We have provided a simulator where you can steer a car around a track for data c
 
 We also want you to create a detailed writeup of the project. Check out the [writeup template](https://github.com/udacity/CarND-Behavioral-Cloning-P3/blob/master/writeup_template.md) for this project and use it as a starting point for creating your own writeup. The writeup can be either a markdown file or a pdf document.
 
-To meet specifications, the project will require submitting five files: 
+To meet specifications, the project will require submitting five files:
 * model.py (script used to create and train the model)
 * drive.py (script to drive the car - feel free to modify this file)
 * model.h5 (a trained Keras model)
@@ -21,18 +21,67 @@ To meet specifications, the project will require submitting five files:
 
 This README file describes how to output the video in the "Details About Files In This Directory" section.
 
-Creating a Great Writeup
 ---
-A great writeup should include the [rubric points](https://review.udacity.com/#!/rubrics/432/view) as well as your description of how you addressed each point.  You should include a detailed description of the code used (with line-number references and code snippets where necessary), and links to other supporting documents or external references.  You should include images in your writeup to demonstrate how your code works with examples.  
 
-All that said, please be concise!  We're not looking for you to write a book here, just a brief description of how you passed each rubric point, and references to the relevant code :). 
+My Study
+---
+First of all, I tried to teach the vehicle drive besides the lake. A video was recorded by simulator and trained on **LeNet**. It turned out that it keep turning around or driving in and out the lane line no matter how I drove it back to center. Then I decided to train on the **network #0** designed in 'Traffic Sign Project' using same **dataset #0**. Unfortunately, the vehicle still do not know how to drive. The performance was enhanced after retrained the new **dataset #1**, because I think dataset #0 might not cover all the situations. The vehicle already knew how to drive forward, turn around and cross the bridge, but failed on the road without lane line after crossing the bridge. I think I need more data to teach the vehicle how to drive.
+There are some steps how the data was preprocessed: normalization,  augmentation, and cropping. At the beginning, vehicle drives better with normalized data than without one, so the data will be fed after normalization with mean and standard deviation were 0.0 and  0.5. The images were flipped horizontally to create more data. And as lesson said, the images were also cropped to decrease irrelevant stuffs in the image to become noises.
 
-You're not required to use markdown for your writeup.  If you use another method please just submit a pdf of your writeup.
+#### Network #0
+- Data Normalization
+- Convolution:    5x5, 64, act.: ReLU
+- Convolution:    3x3, 64, act.: ReLU
+- MaxPooling:     2x2
+- Dropout:        0.5
+- Convolution:    3x3, 32, act.: ReLU
+- Dropout:        0.5
+- Flatten
+- FC Convolution: 512, act.: ReLU
+- FC Convolution: 256, act.: ReLU
+- Dropout:        0.5
+- FC Convolution: 1
+
+New **dataset #2** was then recorded to test that if I should change my network architecture. In order to test my network's robustness, **NVidia's network #1** for autonomous vehicle was implemented to compare the performance. Under the identical condition and input (RGB color image), both of them looks similar and went off the road at same place which I think the dataset is still not good enough @@. The dataset was revised and test again. It turned out network #1 is better than network #0 which can get the vehicle back to the center from ignoring the lane line and out of the way. Meanwhile, I found network #0 took more time to train than network #1 due to too much parameters. It cost almost 11GB to store all the data on GPU with batch size is 16, estimated by [the code from ZFTurbo & Fabrício Pereira](https://stackoverflow.com/questions/43137288/how-to-determine-needed-memory-of-keras-model), which I do not have. So I decided to adjust my **network #2** based on network #0 and #1. The strides was expanded from (1, 1) to (2, 2) in convolution to reduce the size, the images were converted into YUV color space to seek for better performance.
+
+#### Network #1
+
+Ref.: [NVidia's End-to-End Deep Learning for Self-Driving Cars](https://devblogs.nvidia.com/deep-learning-self-driving-cars/)
+
+- Data Normalization
+- Convolution:    5x5, 24, strides: 2x2 , act.: ReLU
+- Convolution:    5x5, 36, strides: 2x2 , act.: ReLU
+- Convolution:    5x5, 48, strides: 2x2 , act.: ReLU
+- Convolution:    3x3, 64, strides: 2x2 , act.: ReLU
+- Convolution:    3x3, 64, strides: 2x2 , act.: ReLU
+- Flatten
+- FC Convolution: 100, act.: ReLU
+- FC Convolution: 50, act.: ReLU
+- FC Convolution: 10, act.: ReLU
+- FC Convolution: 1
+
+Whoola! After this revision, the vehicle can run the entire loop, but it crossed over the lane line sometimes after a turn. I decided to add more dataset to enhance the robustness to fix this issue.
+
+#### Network #2
+- Data Normalization
+- Convolution:    5x5, 64, strides: 2x2 , act.: ReLU
+- Convolution:    3x3, 64, strides: 2x2 , act.: ReLU
+- MaxPooling:     2x2
+- Dropout:        0.5
+- Convolution:    3x3, 32, act.: ReLU
+- Dropout:        0.5
+- Flatten
+- FC Convolution: 512, act.: ReLU
+- FC Convolution: 256, act.: ReLU
+- Dropout:        0.5
+- FC Convolution: 1
+
+---
 
 The Project
 ---
 The goals / steps of this project are the following:
-* Use the simulator to collect data of good driving behavior 
+* Use the simulator to collect data of good driving behavior
 * Design, train and validate a model that predicts a steering angle from image data
 * Use the model to drive the vehicle autonomously around the first track in the simulator. The vehicle should remain on the road for an entire loop around the track.
 * Summarize the results with a written report
@@ -122,4 +171,3 @@ Will run the video at 48 FPS. The default FPS is 60.
 
 ## How to write a README
 A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
-
