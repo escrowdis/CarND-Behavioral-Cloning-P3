@@ -60,7 +60,7 @@ Ref.: [NVidia's End-to-End Deep Learning for Self-Driving Cars](https://devblogs
 - FC Convolution: 10, act.: ReLU
 - FC Convolution: 1
 
-Whoola! After this revision, the vehicle can run the entire loop, but it crossed over the lane line sometimes after a turn. I decided to add more dataset to enhance the robustness to fix this issue.
+Whoola!!! After this revision, the vehicle can run the entire loop, but it crossed over the lane line sometimes after a turn. I decided to add more dataset to enhance the robustness of network.
 
 #### Network #2
 - Data Normalization

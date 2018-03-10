@@ -3,6 +3,7 @@ import csv
 import cv2
 import os
 import numpy as np
+from sklearn.utils import shuffle
 from keras.models import Sequential
 from keras.layers import Flatten, Dense, Lambda, Conv2D, MaxPooling2D, \
                          Dropout, Activation, Cropping2D
@@ -77,9 +78,9 @@ if 'size' != sys.argv[1]:
             measurements.append(measurement)
             measurements.append(-measurement)
 
-
-y_train = np.array(measurements)
-X_train = np.array(images)
+measurements, images = shuffle(measurements, images)
+print(len(measurements))
+print(len(images))
 
 model = Sequential()
 model.add(Cropping2D(cropping=((55, 25), (0, 0)), input_shape=(160, 320, 3)))
@@ -118,7 +119,19 @@ if 'size' == sys.argv[1]:
     print(mem_gb)
 else:
     model.compile(loss='mse', optimizer='adam')
-    model.fit(X_train, y_train, validation_split=0.3, shuffle=True, \
-              epochs=7, batch_size=32)
+
+    X_train = []
+    y_train = []
+    round = 5
+    data_len = len(measurements)
+    seg = int(data_len / round)
+    for i in range(round):
+        data_head = int(i * seg)
+        data_end = int(data_head + seg)
+        y_train = np.array(measurements[data_head:data_end])
+        X_train = np.array(images[data_head:data_end])
+
+        model.fit(X_train, y_train, validation_split=0.3, shuffle=True, \
+                  epochs=epoch, batch_size=batch_size)
 
     model.save('model' + net_id + '.h5')
