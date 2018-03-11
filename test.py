@@ -49,6 +49,8 @@ if len(sys.argv) > 4:
 
 images = []
 measurements = []
+X_train = []
+y_train = []
 
 # os.chdir(data_dir)
 # datas_dir = [d for d in os.listdir('.') if os.path.isdir(d)]
@@ -69,9 +71,8 @@ if 'size' != sys.argv[1]:
         for i in range(3):
             file_name = line[i].split('/')[-1]
             cur_path = data_dir + 'IMG/' + file_name
-            image_bgr = cv2.imread(cur_path)
-            image_yuv = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2YUV)
-            image = image_yuv
+            image = cv2.imread(cur_path)
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2YUV)
             images.append(image)
             images.append(np.fliplr(image))
             measurement = float(line[3]) + float(steering_bias[i])
@@ -79,8 +80,8 @@ if 'size' != sys.argv[1]:
             measurements.append(-measurement)
 
 measurements, images = shuffle(measurements, images)
-print(len(measurements))
-print(len(images))
+assert len(images) == len(measurements)
+print('input data size', len(measurements))
 
 model = Sequential()
 model.add(Cropping2D(cropping=((55, 25), (0, 0)), input_shape=(160, 320, 3)))
@@ -89,15 +90,18 @@ model.add(Lambda(lambda x: x / 255.0 - 0.5))
 if net_id == '0':
     # Traffic Sign
     model.add(Conv2D(64, (5, 5), strides=(2, 2), activation='relu'))
-    model.add(Conv2D(64, (3, 3), strides=(2, 2), activation='relu'))
+    model.add(Conv2D(64, (5, 5), activation='relu'))
     model.add(MaxPooling2D((2, 2)))
     model.add(Dropout(0.5))
     model.add(Conv2D(32, (3, 3), activation='relu'))
+    model.add(MaxPooling2D((2, 2)))
     model.add(Dropout(0.5))
+    model.add(Conv2D(16, (3, 3), activation='relu'))
     model.add(Flatten())
-    model.add(Dense(400, activation='relu'))
+    model.add(Dense(200, activation='relu'))
+    # model.add(Dropout(0.5))
     model.add(Dense(20, activation='relu'))
-    model.add(Dropout(0.5))
+    # model.add(Dropout(0.5))
     model.add(Dense(1))
 elif net_id == '1':
     # NVidia
@@ -115,23 +119,17 @@ elif net_id == '1':
     model.add(Dense(1))
 
 if 'size' == sys.argv[1]:
+    model.summary()
+
     mem_gb = get_model_memory_usage(batch_size, model)
     print(mem_gb)
 else:
     model.compile(loss='mse', optimizer='adam')
 
-    X_train = []
-    y_train = []
-    round = 5
-    data_len = len(measurements)
-    seg = int(data_len / round)
-    for i in range(round):
-        data_head = int(i * seg)
-        data_end = int(data_head + seg)
-        y_train = np.array(measurements[data_head:data_end])
-        X_train = np.array(images[data_head:data_end])
+    y_train = np.array(measurements)
+    X_train = np.array(images)
 
-        model.fit(X_train, y_train, validation_split=0.3, shuffle=True, \
-                  epochs=epoch, batch_size=batch_size)
+    model.fit(X_train, y_train, validation_split=0.2, shuffle=True, \
+              epochs=epoch, batch_size=batch_size)
 
-    model.save('model' + net_id + '.h5')
+    model.save('model.h5')

@@ -1,5 +1,6 @@
 # Behaviorial Cloning Project
 
+[](https://towardsdatascience.com/transfer-learning-using-keras-d804b2e04ef8)
 [![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
 Overview
@@ -60,21 +61,31 @@ Ref.: [NVidia's End-to-End Deep Learning for Self-Driving Cars](https://devblogs
 - FC Convolution: 10, act.: ReLU
 - FC Convolution: 1
 
-Whoola!!! After this revision, the vehicle can run the entire loop, but it crossed over the lane line sometimes after a turn. I decided to add more dataset to enhance the robustness of network.
+Whoola!!! After this revision, the vehicle can run the entire loop, but it crossed over the lane line sometimes after a turn. I preferred to add some corner cases into the dataset to enhance the robustness of network. After adding some data inside and retrained, the vehicle failed to pass the whole loop which made me confused which might lead to my network is not robust at all. Finally, I found I forgot to convert image into YUV color space before feeding it into the model, which made me curious why NVidia's was failed as well @@. The track has been conquered!
 
 #### Network #2
 - Data Normalization
 - Convolution:    5x5, 64, strides: 2x2 , act.: ReLU
-- Convolution:    3x3, 64, strides: 2x2 , act.: ReLU
+- Convolution:    5x5, 64, strides: 2x2 , act.: ReLU
 - MaxPooling:     2x2
 - Dropout:        0.5
 - Convolution:    3x3, 32, act.: ReLU
+- MaxPooling:     2x2
 - Dropout:        0.5
+- Convolution:    3x3, 16, act.: ReLU
 - Flatten
-- FC Convolution: 512, act.: ReLU
-- FC Convolution: 256, act.: ReLU
-- Dropout:        0.5
+- FC Convolution: 200, act.: ReLU
+- FC Convolution: 20, act.: ReLU
 - FC Convolution: 1
+
+After the lake track, here's the jungle track. I think this will be more difficult than previous one due to more complicated surroundings. I spent lots of time in a problem 'MemoryError' when loading data into np.array like 'y_train = np.array(measurements)', which I fixed it by creating empty list first('y_train = []'). I found that my vehicle was stopped in the middle of the track, so I trigger it to move on during recoding.
+
+Done! The videos will show how the vehicle drives~
+
+| Lake Track | Jungle Track |
+|-|-|
+|[![lake track](https://img.youtube.com/vi/DtqpVTdao9I/0.jpg)](https://www.youtube.com/watch?v=DtqpVTdao9I) | [![lake track](https://img.youtube.com/vi/G_Apv_TdHmc/0.jpg)](https://www.youtube.com/watch?v=G_Apv_TdHmc) |
+
 
 ---
 
