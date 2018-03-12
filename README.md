@@ -3,6 +3,13 @@
 [](https://towardsdatascience.com/transfer-learning-using-keras-d804b2e04ef8)
 [![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
+[lake_0]: ./imgs/lake/2018_03_11_02_14_23_074.jpg ""
+[lake_1]: ./imgs/lake/2018_03_11_02_15_25_227.jpg ""
+
+[jungle_0]: ./imgs/jungle/2018_03_11_14_06_46_535.jpg ""
+[jungle_1]: ./imgs/jungle/2018_03_11_14_07_03_056.jpg ""
+[jungle_2]: ./imgs/jungle/2018_03_11_14_07_21_875.jpg ""
+[jungle_3]: ./imgs/jungle/2018_03_11_14_07_26_622.jpg ""
 
 The Project
 ---
@@ -73,17 +80,23 @@ After the lake track, here's the jungle track. I think this will be more difficu
 Done! The videos will show how the vehicle drives with the links at the bottom~
 
 ### summary
-In model part. I tried the network implemnted in Traffic Sign Project which look not very well without modification. So I adjusted my network based on NVidia's one to make it understand more which I think the previous network is not wide enough at the beginning. The final model is network #2 shown above.
-In dataset part, I first recorded one loop as dataset which made vehicle sometimes stuck in some place (crossed the lane line, bumped to the bridge, went into the farm,...etc), so the more dataset was recored. The final dataset is consisted of: 
+In model part. I tried the network implemented in Traffic Sign Project which look not very well without modification. So I adjusted my network based on NVidia's one to make it understand more which I think the previous network is not wide enough at the beginning. The final model is network #2 shown above.
+In dataset part, I first recorded one loop as dataset which made vehicle sometimes stuck in some place (crossed the lane line, bumped to the bridge, went into the farm,...etc), so the more dataset was recored. The final dataset is consisted of:
+
 ### Lake track
 - 3 loop forward
 - 2 loop backward
 - Some corner cases (such as have a big turn closed to bridge or the lane)
 
+![][lake_0] ![][lake_1]
+
 ### Jungle track
 - 2 loop forward
 - 1 loop backward
 - Some corner cases (take a big turn closed the edge, moved into shadowed area)
+
+![][jungle_0] ![][jungle_1]
+![][jungle_2] ![][jungle_3]
 
 ## Results
 
